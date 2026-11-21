@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Daftar Karyawan</h2>
+
+  <form method="get">
+    <input type="text" name="q" value="{{ q }}" placeholder="Cari nama / email / jabatan">
+    <button type="submit" class="btn">Cari</button>
+    <a href="{% url 'employee-create' %}" class="btn">+ Tambah Karyawan</a>
+    <a class="btn" href="{% url 'employee-export' %}?q={{ q|urlencode }}&format=csv">Export CSV</a>
+    <a class="btn" href="{% url 'employee-export' %}?q={{ q|urlencode }}&format=xlsx">Export Excel</a>
+  </form>
+
+  <table>
+    <thead>
+      <tr><th>Nama</th><th>Email</th><th>Jabatan</th><th>Tgl Masuk</th><th>Status</th><th>Aksi</th></tr>
+    </thead>
+    <tbody>
+      {% for e in object_list %}
+      <tr>
+        <td>{{ e.nama }}</td>
+        <td>{{ e.email }}</td>
+        <td>{{ e.jabatan }}</td>
+        <td>{{ e.tanggal_masuk|date:"d M Y" }}</td>
+        <td>{% if e.status_aktif %}Aktif{% else %}Nonaktif{% endif %}</td>
+        <td>
+          <a href="{% url 'employee-update' e.pk %}" class="btn">Edit</a>
+          <a href="{% url 'employee-delete' e.pk %}" class="btn btn-danger">Hapus</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">Tidak ada data.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+      <a href="?q={{ q|urlencode }}&page={{ page_obj.previous_page_number }}">&laquo; Prev</a>
+    {% endif %}
+    <span>Halaman {{ page_obj.number }} dari {{ paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a href="?q={{ q|urlencode }}&page={{ page_obj.next_page_number }}">Next &raquo;</a>
+    {% endif %}
+  </div>
+{% endblock %}

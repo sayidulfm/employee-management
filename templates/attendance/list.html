@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>{% if user.is_staff %}Laporan Absensi{% else %}Absensi Saya{% endif %}</h2>
+
+  {% if employee %}
+    <div style="margin-bottom:16px;padding:12px;background:#f3f4f6;border-radius:6px">
+      <strong>Hari ini:</strong>
+      {% if today %}
+        Masuk {{ today.jam_masuk|time:"H:i" }}
+        {% if today.jam_keluar %}| Keluar {{ today.jam_keluar|time:"H:i" }}{% endif %}
+      {% else %}
+        Belum check-in
+      {% endif %}
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <form method="post" action="{% url 'attendance-check-in' %}">
+          {% csrf_token %}
+          <button class="btn" {% if today %}disabled{% endif %}>Check-in</button>
+        </form>
+        <form method="post" action="{% url 'attendance-check-out' %}">
+          {% csrf_token %}
+          <button class="btn" {% if not today or today.jam_keluar %}disabled{% endif %}>Check-out</button>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+
+  <form method="get">
+    {% if user.is_staff %}
+      <input type="text" name="q" value="{{ q }}" placeholder="Cari nama karyawan">
+    {% endif %}
+    Dari <input type="date" name="date_from" value="{{ date_from }}">
+    Sampai <input type="date" name="date_to" value="{{ date_to }}">
+    <button type="submit" class="btn">Filter</button>
+    {% if user.is_staff %}
+      <a class="btn" href="{% url 'attendance-export' %}?q={{ q|urlencode }}&date_from={{ date_from }}&date_to={{ date_to }}&format=csv">Export CSV</a>
+      <a class="btn" href="{% url 'attendance-export' %}?q={{ q|urlencode }}&date_from={{ date_from }}&date_to={{ date_to }}&format=xlsx">Export Excel</a>
+    {% endif %}
+  </form>
+
+  <table>
+    <thead>
+      <tr>{% if user.is_staff %}<th>Nama</th>{% endif %}<th>Tanggal</th><th>Jam Masuk</th><th>Jam Keluar</th></tr>
+    </thead>
+    <tbody>
+      {% for a in object_list %}
+      <tr>
+        {% if user.is_staff %}<td>{{ a.employee.nama }}</td>{% endif %}
+        <td>{{ a.tanggal|date:"d M Y" }}</td>
+        <td>{{ a.jam_masuk|time:"H:i"|default:"-" }}</td>
+        <td>{{ a.jam_keluar|time:"H:i"|default:"-" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">Tidak ada data.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+      <a href="?q={{ q|urlencode }}&date_from={{ date_from }}&date_to={{ date_to }}&page={{ page_obj.previous_page_number }}">&laquo; Prev</a>
+    {% endif %}
+    <span>Halaman {{ page_obj.number }} dari {{ paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a href="?q={{ q|urlencode }}&date_from={{ date_from }}&date_to={{ date_to }}&page={{ page_obj.next_page_number }}">Next &raquo;</a>
+    {% endif %}
+  </div>
+{% endblock %}

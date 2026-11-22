@@ -33,6 +33,7 @@
     {% if user.is_authenticated %}
       {% if user.is_staff %}
         <a href="{% url 'employee-list' %}">Karyawan</a>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
       {% endif %}
       <a href="{% url 'attendance-list' %}">Absensi</a>
       <span class="spacer"></span>

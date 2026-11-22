@@ -11,6 +11,7 @@ CRUD karyawan, absensi harian, laporan, export CSV/Excel, dan REST API.
 - Search dan pagination diproses di server (Django)
 - Export karyawan dan absensi ke CSV dan Excel (mengikuti filter aktif)
 - REST API (Django REST Framework)
+- Dashboard admin (`/dashboard/`) dengan Chart.js: jumlah karyawan per jabatan dan kehadiran 7 hari terakhir
 
 ## Tech Stack
 Python, Django, Django REST Framework, SQLite, openpyxl

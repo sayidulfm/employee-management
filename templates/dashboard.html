@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Dashboard</h2>
+
+  <div style="display:flex;gap:16px;margin:16px 0;flex-wrap:wrap">
+    <div style="padding:12px 20px;background:#f3f4f6;border-radius:6px">
+      <div style="font-size:13px;color:#555">Total karyawan</div>
+      <strong style="font-size:24px">{{ total_karyawan }}</strong>
+    </div>
+    <div style="padding:12px 20px;background:#f3f4f6;border-radius:6px">
+      <div style="font-size:13px;color:#555">Karyawan aktif</div>
+      <strong style="font-size:24px">{{ total_aktif }}</strong>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px">
+    <div>
+      <h3>Karyawan per Jabatan</h3>
+      <canvas id="chartJabatan"></canvas>
+    </div>
+    <div>
+      <h3>Kehadiran 7 Hari Terakhir</h3>
+      <canvas id="chartHarian"></canvas>
+    </div>
+  </div>
+
+  {{ jabatan_labels|json_script:"jabatan-labels" }}
+  {{ jabatan_data|json_script:"jabatan-data" }}
+  {{ hari_labels|json_script:"hari-labels" }}
+  {{ hari_data|json_script:"hari-data" }}
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    const get = id => JSON.parse(document.getElementById(id).textContent);
+
+    new Chart(document.getElementById("chartJabatan"), {
+      type: "bar",
+      data: {
+        labels: get("jabatan-labels"),
+        datasets: [{ label: "Jumlah karyawan", data: get("jabatan-data"), backgroundColor: "#2563eb" }]
+      },
+      options: { scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+    });
+
+    new Chart(document.getElementById("chartHarian"), {
+      type: "line",
+      data: {
+        labels: get("hari-labels"),
+        datasets: [{ label: "Karyawan hadir", data: get("hari-data"), borderColor: "#16a34a", tension: 0.3 }]
+      },
+      options: { scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+    });
+  </script>
+{% endblock %}

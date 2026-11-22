@@ -24,12 +24,12 @@
     </div>
   {% endif %}
 
-  <form method="get">
+    <form method="get" class="filter-form">
     {% if user.is_staff %}
       <input type="text" name="q" value="{{ q }}" placeholder="Cari nama karyawan">
     {% endif %}
-    Dari <input type="date" name="date_from" value="{{ date_from }}">
-    Sampai <input type="date" name="date_to" value="{{ date_to }}">
+    <label>Dari <input type="date" name="date_from" value="{{ date_from }}"></label>
+    <label>Sampai <input type="date" name="date_to" value="{{ date_to }}"></label>
     <button type="submit" class="btn">Filter</button>
     {% if user.is_staff %}
       <a class="btn" href="{% url 'attendance-export' %}?q={{ q|urlencode }}&date_from={{ date_from }}&date_to={{ date_to }}&format=csv">Export CSV</a>
